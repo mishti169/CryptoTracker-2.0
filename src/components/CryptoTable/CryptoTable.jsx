@@ -1,10 +1,11 @@
 import { React, useEffect, useState } from "react";
 import axios from "axios";
-import { Table } from "antd";
+import { Table, Modal } from "antd";
 
 const CryptoTable = () => {
   const [inputVal, setInputVal] = useState("");
   const [dataSource, setDataSource] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     getApiCryptoData();
@@ -20,7 +21,6 @@ const CryptoTable = () => {
     );
 
     const allCoinDataArr = data.map((currCoinData) => {
-      console.log(currCoinData, "i m currdata");
       return {
         coinName: currCoinData.name,
         key: currCoinData.id,
@@ -38,7 +38,6 @@ const CryptoTable = () => {
       dataIndex: "coinName",
       key: "name",
       render: (_, currCoin) => {
-        console;
         return (
           <div>
             <div>
@@ -61,6 +60,15 @@ const CryptoTable = () => {
     },
   ];
 
+  const showModal = () => {
+    setIsOpen(true);
+  };
+  const handleCancel = () => {
+    setIsOpen(false);
+  };
+  const handleOk = () => {
+    setIsOpen(false);
+  };
   return (
     <div>
       <input
@@ -69,7 +77,31 @@ const CryptoTable = () => {
         value={inputVal}
         onChange={handleChange}
       />
-      <Table dataSource={dataSource} columns={columns} pagination={false} />
+      <Table
+        onRow={(record) => {
+          //   console.log(record, "im log");
+          return {
+            onClick: () => {
+              showModal();
+              console.log(record, "im record");
+            },
+          };
+        }}
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+      />
+      <Modal
+        title="Coin Details Modal"
+        open={isOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        centered
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
     </div>
   );
 };
