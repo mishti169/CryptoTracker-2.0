@@ -27,6 +27,7 @@ const CryptoTable = () => {
         img: currCoinData.image,
         currentPrice: currCoinData.current_price,
         marketCapital: currCoinData.market_cap,
+        change: Number(currCoinData.price_change_percentage_24h.toFixed(2)),
       };
     });
     setDataSource(allCoinDataArr);
@@ -57,6 +58,11 @@ const CryptoTable = () => {
       title: "Market Capital",
       dataIndex: "marketCapital",
       key: "marketCapital",
+    },
+    {
+      title: "% Change",
+      dataIndex: "change",
+      key: "change",
     },
   ];
 
