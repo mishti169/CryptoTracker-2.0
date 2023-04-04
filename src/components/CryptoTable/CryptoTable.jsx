@@ -6,6 +6,7 @@ const CryptoTable = () => {
   const [inputVal, setInputVal] = useState("");
   const [dataSource, setDataSource] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [modalSelectedCoin, setModalSelectedCoin] = useState({});
 
   useEffect(() => {
     getApiCryptoData();
@@ -66,8 +67,10 @@ const CryptoTable = () => {
     },
   ];
 
-  const showModal = () => {
+  const showModal = (record) => {
+    console.log(record, "showmodal no record");
     setIsOpen(true);
+    setModalSelectedCoin(record);
   };
   const handleCancel = () => {
     setIsOpen(false);
@@ -88,7 +91,7 @@ const CryptoTable = () => {
           //   console.log(record, "im log");
           return {
             onClick: () => {
-              showModal();
+              showModal(record);
               console.log(record, "im record");
             },
           };
@@ -104,9 +107,14 @@ const CryptoTable = () => {
         onCancel={handleCancel}
         centered
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div>
+          <img src={modalSelectedCoin.img} width={180} />
+          <div>
+            <h2>{modalSelectedCoin.coinName}</h2>
+            <h3>Current-Price{modalSelectedCoin.currentPrice}</h3>
+            <h3>Market-Capital{modalSelectedCoin.marketCapital}</h3>
+          </div>
+        </div>
       </Modal>
     </div>
   );
