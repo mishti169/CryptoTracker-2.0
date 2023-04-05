@@ -111,8 +111,8 @@ const CryptoTable = () => {
           <img src={modalSelectedCoin.img} width={180} />
           <div>
             <h2>{modalSelectedCoin.coinName}</h2>
-            <h3>Current-Price{modalSelectedCoin.currentPrice}</h3>
-            <h3>Market-Capital{modalSelectedCoin.marketCapital}</h3>
+            <h3>Current Price:{modalSelectedCoin.currentPrice}</h3>
+            <h3>Market Capital:{modalSelectedCoin.marketCapital}</h3>
           </div>
         </div>
       </Modal>
