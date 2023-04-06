@@ -73,10 +73,15 @@ const CryptoTable = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [modalSelectedCoin, setModalSelectedCoin] = useState({});
+  const [apiData, setApiData] = useState([]);
 
   useEffect(() => {
     getApiCryptoData();
   }, []);
+
+  useEffect(() => {
+    filterCoinData();
+  }, [inputVal]);
 
   const handleChange = (e) => {
     setInputVal(e.target.value);
@@ -98,6 +103,15 @@ const CryptoTable = () => {
       };
     });
     setDataSource(allCoinDataArr);
+    setApiData(allCoinDataArr);
+  };
+  const filterCoinData = () => {
+    const filteredCoinData = apiData.filter((currentCoinData) => {
+      return currentCoinData.coinName
+        .toLowerCase()
+        .includes(inputVal.toLowerCase());
+    });
+    setDataSource(filteredCoinData);
   };
 
   const columns = [
