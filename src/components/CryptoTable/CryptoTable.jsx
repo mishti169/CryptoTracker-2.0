@@ -14,7 +14,7 @@ const CryptoTable = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalSelectedCoin, setModalSelectedCoin] = useState({});
   const [apiData, setApiData] = useState([]);
-  const [timeRange, setTimeRange] = useState("");
+  const [timeRange, setTimeRange] = useState("1D");
   const [chartData, setChartData] = useState({});
 
   const chartDataSource = {
@@ -192,6 +192,9 @@ const CryptoTable = () => {
         onOk={handleOk}
         onCancel={handleCancel}
         centered
+        afterClose={() => {
+          setTimeRange("1D");
+        }}
       >
         <div>
           <img src={modalSelectedCoin.img} width={180} />
@@ -204,6 +207,7 @@ const CryptoTable = () => {
         <div>
           <Select
             labelInValue
+            value={timeRange}
             defaultValue={[
               {
                 value: "1D",
