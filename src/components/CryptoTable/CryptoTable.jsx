@@ -103,6 +103,7 @@ const CryptoTable = () => {
       title: "Coin Name",
       dataIndex: "coinName",
       key: "name",
+      sorter: (a, b) => a.coinName.length - b.coinName.length,
       render: (_, currCoin) => {
         return (
           <div>
@@ -118,16 +119,25 @@ const CryptoTable = () => {
       title: "Current Price",
       dataIndex: "currentPrice",
       key: "price",
+      sorter: {
+        compare: (a, b) => a.currentPrice - b.currentPrice,
+      },
     },
     {
       title: "Market Capital",
       dataIndex: "marketCapital",
       key: "marketCapital",
+      sorter: {
+        compare: (a, b) => a.marketCapital - b.marketCapital,
+      },
     },
     {
       title: "% Change",
       dataIndex: "change",
       key: "change",
+      sorter: {
+        compare: (a, b) => a.change - b.change,
+      },
     },
   ];
 
@@ -164,6 +174,9 @@ const CryptoTable = () => {
     });
     setChartData(newConvertedData);
   };
+  // const onSortChange = (sorter, extra) => {
+  //   console.log("hi am sorting ", sorter, extra);
+  // };
 
   return (
     <div>
@@ -185,6 +198,7 @@ const CryptoTable = () => {
         dataSource={dataSource}
         columns={columns}
         pagination={false}
+        // onChange={onSortChange}
       />
       <Modal
         title="Coin Details Modal"
