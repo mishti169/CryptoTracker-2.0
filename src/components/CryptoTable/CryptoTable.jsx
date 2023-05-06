@@ -16,6 +16,9 @@ const CryptoTable = () => {
 	const [apiData, setApiData] = useState([]);
 	const [timeRange, setTimeRange] = useState('1D');
 	const [chartData, setChartData] = useState({});
+	const [currPrice, setCurrPrice] = useState('currPrice');
+	const [mktCap, setMktCap] = useState('marketCapital');
+	const [perChange, setPerChange] = useState('%Change');
 
 	const chartDataSource = {
 		chart: {
@@ -177,44 +180,34 @@ const CryptoTable = () => {
 	// };
 	const bubbleSort = (dataArr, order, field) => {
 		const newDataArr = [...dataArr];
-		const swap = (arr, index1, index2) => {
-			let temp = arr[index1];
-			arr[index1] = arr[index2];
-			arr[index2] = temp;
-		};
-		if (order === 'lowestFirst') {
-			// console.log('hi im bubble sort');
-			for (let j = 0; j <= newDataArr.length; j++) {
-				for (let i = 0; i < newDataArr.length - 1; i++) {
-					if (newDataArr[i][field] > newDataArr[i + 1][field]) {
-						swap(newDataArr, i, i + 1);
-					}
+		if (order !== '') {
+			newDataArr.sort((a, b) => {
+				if (a[field] < b[field]) {
+					return -1;
 				}
-			}
-		} else if (order === 'highestFirst') {
-			for (let j = 0; j <= newDataArr.length; j++) {
-				for (let i = 0; i < newDataArr.length - 1; i++) {
-					if (newDataArr[i][field] < newDataArr[i + 1][field]) {
-						swap(newDataArr, i, i + 1);
-					}
+				if (a[field] > b[field]) {
+					return 1;
 				}
-			}
+				return 0;
+			});
 		}
-		setDataSource(newDataArr);
+
+		if (order === 'lowestFirst') {
+			setDataSource(newDataArr);
+		} else if (order === 'highestFirst') {
+			newDataArr.reverse();
+			setDataSource(newDataArr);
+		} else {
+			setDataSource(apiData);
+		}
 	};
-	const onDataChange = (value) => {
-		if (value === 'lowestFirstCurrPrice') {
-			bubbleSort(dataSource, 'lowestFirst', 'currentPrice');
-		} else if (value === 'highestFirstCurrPrice') {
-			bubbleSort(dataSource, 'highestFirst', 'currentPrice');
-		} else if (value === 'lowestFirstMktCap') {
-			bubbleSort(dataSource, 'lowestFirst', 'marketCapital');
-		} else if (value === 'highestFirstMktCap') {
-			bubbleSort(dataSource, 'highestFirst', 'marketCapital');
-		} else if (value === 'lowestFirstChange') {
-			bubbleSort(dataSource, 'lowestFirst', 'change');
-		} else if (value === 'highestFirstChange') {
-			bubbleSort(dataSource, 'highestFirst', 'change');
+	const onDataChange = (value, field1) => {
+		if (value === 'lowest') {
+			bubbleSort(dataSource, 'lowestFirst', field1);
+		} else if (value === 'highest') {
+			bubbleSort(dataSource, 'highestFirst', field1);
+		} else {
+			bubbleSort(dataSource, '', field1);
 		}
 	};
 
@@ -224,13 +217,17 @@ const CryptoTable = () => {
 				<input type='search' placeholder='Search Coin' value={inputVal} onChange={handleChange} />
 				<div>
 					<Select
-						defaultValue='Current Price'
+						defaultValue='currPrice'
+						value={currPrice}
 						style={{
 							width: 134,
 						}}
 						onChange={(value) => {
-							onDataChange(value);
-							// console.log(value, ' i m value');
+							onDataChange(value, 'currentPrice');
+							console.log(value, ' i m value');
+							setCurrPrice(value);
+							setMktCap('marketCapital');
+							setPerChange('%Change');
 						}}
 						options={[
 							{
@@ -238,22 +235,26 @@ const CryptoTable = () => {
 								label: 'Current Price',
 							},
 							{
-								value: 'highestFirstCurrPrice',
+								value: 'highest',
 								label: 'Highest First',
 							},
 							{
-								value: 'lowestFirstCurrPrice',
+								value: 'lowest',
 								label: 'Lowest First',
 							},
 						]}
 					/>
 					<Select
-						defaultValue='Market Capital'
+						defaultValue='marketCapital'
+						value={mktCap}
 						style={{
 							width: 134,
 						}}
 						onChange={(value) => {
-							onDataChange(value);
+							onDataChange(value, 'marketCapital');
+							setMktCap(value);
+							setCurrPrice('currentPrice');
+							setPerChange('%Change');
 						}}
 						options={[
 							{
@@ -261,22 +262,26 @@ const CryptoTable = () => {
 								label: 'Market Capital',
 							},
 							{
-								value: 'highestFirstMktCap',
+								value: 'highest',
 								label: 'Highest First',
 							},
 							{
-								value: 'lowestFirstMktCap',
+								value: 'lowest',
 								label: 'Lowest First',
 							},
 						]}
 					/>
 					<Select
-						defaultValue='% Change'
+						defaultValue='%Change'
+						value={perChange}
 						style={{
 							width: 134,
 						}}
 						onChange={(value) => {
-							onDataChange(value);
+							onDataChange(value, 'change');
+							setPerChange(value);
+							setMktCap('marketCapital');
+							setCurrPrice('currentPrice');
 						}}
 						options={[
 							{
@@ -284,11 +289,11 @@ const CryptoTable = () => {
 								label: '% Change',
 							},
 							{
-								value: 'highestFirstChange',
+								value: 'highest',
 								label: 'Highest First',
 							},
 							{
-								value: 'lowestFirstChange',
+								value: 'lowest',
 								label: 'Lowest First',
 							},
 						]}
