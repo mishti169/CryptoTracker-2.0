@@ -27,7 +27,7 @@ const CryptoTable = () => {
 			yaxisname: 'price',
 			xaxisname: 'time',
 			subcaption: '',
-			rotatelabels: '1',
+			// rotatelabels: '1',
 			setadaptiveymin: '1',
 			theme: 'fusion',
 		},
@@ -74,7 +74,21 @@ const CryptoTable = () => {
 	const handleChange = (e) => {
 		setInputVal(e.target.value);
 	};
+	const parseCoinData = (allCoinDataArr) => {
+		// get every 12th value for 1day data
+		const newDayData = [];
+		for (let i = 0; i < allCoinDataArr.length; i += 12) {
+			const [, timeStamp] = allCoinDataArr[i].label.split(' ');
+			const [hour, min] = timeStamp.split(':');
+			// get only timeStamp from date + time
+			allCoinDataArr[i].label = `${hour}:${min}`;
+			newDayData.push(allCoinDataArr[i]);
+		}
+		//get only time
 
+		console.log(newDayData, 'im new day data');
+		return newDayData;
+	};
 	const getApiCryptoData = async () => {
 		const { data } = await axios.get(
 			'https://api.coingecko.com/api/v3/coins/markets?vs_currency=INR&order=market_cap_desc&per_page=100&page=1&sparkline=false'
@@ -172,9 +186,12 @@ const CryptoTable = () => {
 			return {
 				label: dateTime,
 				value: price,
+				tooltext: dateTime,
 			};
 		});
-		setChartData(newConvertedData);
+		const parsedCoinData = parseCoinData(newConvertedData);
+
+		setChartData(parsedCoinData);
 	};
 	// const onSortChange = (sorter, extra) => {
 	//   console.log("hi am sorting ", sorter, extra);
