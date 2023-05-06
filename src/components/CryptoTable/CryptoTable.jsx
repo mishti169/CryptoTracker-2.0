@@ -6,6 +6,7 @@ import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
 import FusionCharts from 'fusioncharts';
 import ReactFusioncharts from 'react-fusioncharts';
 import { fromUnixTime, getTime, getUnixTime, sub, format } from 'date-fns';
+import './CryptoTable.scss';
 ReactFusioncharts.fcRoot(FusionCharts, Charts, FusionTheme);
 
 const CryptoTable = () => {
@@ -323,9 +324,11 @@ const CryptoTable = () => {
 				afterClose={() => {
 					setTimeRange('1D');
 				}}
+				width='90%'
+				className='coin-detail-modal'
 			>
-				<div>
-					<img src={modalSelectedCoin.img} width={180} />
+				<div className='coin-detail-wrapper'>
+					<img src={modalSelectedCoin.img} width={110} />
 					<div>
 						<h2>{modalSelectedCoin.coinName}</h2>
 						<h3>Current Price:{modalSelectedCoin.currentPrice}</h3>
