@@ -7,3 +7,44 @@
 .coin-detail-modal {
   padding: 20px;
 }
+
+.centered {
+  margin: 40px auto;
+  width: 80%;
+
+}
+
+.max-width-1200 {
+  max-width: 1200px;
+
+}
+
+.flex-box {
+  display: flex;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+
+
+
+.input {
+  width: 50%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding-left: 10px;
+}
+
+input:focus {
+  outline: none;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.padding-10 {
+  padding: 10px;
+}

@@ -231,14 +231,15 @@ const CryptoTable = () => {
 
 	return (
 		<div>
-			<div>
-				<input type='search' placeholder='Search Coin' value={inputVal} onChange={handleChange} />
+			<div className='centered  flex-box  space-between max-width-1200'>
+				<input type='search' placeholder='Search Coin' value={inputVal} onChange={handleChange} className='input ' />
 				<div>
 					<Select
 						defaultValue='currPrice'
 						value={currPrice}
 						style={{
 							width: 134,
+							margin: '0 10px 0 0',
 						}}
 						onChange={(value) => {
 							onDataChange(value, 'currentPrice');
@@ -267,6 +268,7 @@ const CryptoTable = () => {
 						value={mktCap}
 						style={{
 							width: 134,
+							margin: '0 10px 0 0',
 						}}
 						onChange={(value) => {
 							onDataChange(value, 'marketCapital');
@@ -318,20 +320,22 @@ const CryptoTable = () => {
 					/>
 				</div>
 			</div>
-			<Table
-				onRow={(record) => {
-					return {
-						onClick: () => {
-							showModal(record);
-							getApiChartData(record.key);
-						},
-					};
-				}}
-				dataSource={dataSource}
-				columns={columns}
-				pagination={false}
-				// onChange={onSortChange}
-			/>
+			<div className='centered max-width-1200'>
+				<Table
+					onRow={(record) => {
+						return {
+							onClick: () => {
+								showModal(record);
+								getApiChartData(record.key);
+							},
+						};
+					}}
+					dataSource={dataSource}
+					columns={columns}
+					pagination={false}
+					// onChange={onSortChange}
+				/>
+			</div>
 			<Modal
 				title='Coin Details Modal'
 				open={isOpen}
