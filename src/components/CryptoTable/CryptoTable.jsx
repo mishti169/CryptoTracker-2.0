@@ -138,7 +138,16 @@ const CryptoTable = () => {
 			title: 'Coin Name',
 			dataIndex: 'coinName',
 			key: 'name',
-			sorter: (a, b) => a.coinName.length - b.coinName.length,
+			sorter: (a, b) => {
+				// const ans = a.coinName.toLowerCase() - b.coinName.toLowerCase();
+				if (a.coinName.toLowerCase() > b.coinName.toLowerCase()) {
+					return 1;
+				} else if (a.coinName.toLowerCase() < b.coinName.toLowerCase()) {
+					return -1;
+				} else {
+					return 0;
+				}
+			},
 			render: (_, currCoin) => {
 				return (
 					<div>
