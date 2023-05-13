@@ -85,9 +85,26 @@ const CryptoTable = () => {
 			newDayData.push(allCoinDataArr[i]);
 		}
 		//get only time
-
-		console.log(newDayData, 'im new day data');
 		return newDayData;
+	};
+
+	const getReadableCurrPrice = (val) => {
+		if (val >= 1000000000000) {
+			const ans = Number(val / 1000000000000).toFixed(2) + 'T';
+			return ans;
+		} else if (val >= 1000000000) {
+			const ans = Number(val / 1000000000).toFixed(2) + 'B';
+			return ans;
+		} else if (val >= 1000000) {
+			const ans = Number(val / 1000000).toFixed(2) + 'M';
+			return ans;
+		} else if (val >= 100000) {
+			const ans = Number(val / 100000).toFixed(2) + 'L';
+			return ans;
+		} else if (val >= 1000) {
+			const ans = Number(val / 1000).toFixed(2) + 'K';
+			return ans;
+		} else return val;
 	};
 	const getApiCryptoData = async () => {
 		const { data } = await axios.get(
@@ -99,7 +116,9 @@ const CryptoTable = () => {
 				coinName: currCoinData.name,
 				key: currCoinData.id,
 				img: currCoinData.image,
+				readableCurrentPrice: getReadableCurrPrice(currCoinData.current_price),
 				currentPrice: currCoinData.current_price,
+				readableMarketCapital: getReadableCurrPrice(currCoinData.market_cap),
 				marketCapital: currCoinData.market_cap,
 				change: Number(currCoinData.price_change_percentage_24h.toFixed(2)),
 			};
@@ -133,7 +152,7 @@ const CryptoTable = () => {
 		},
 		{
 			title: 'Current Price',
-			dataIndex: 'currentPrice',
+			dataIndex: 'readableCurrentPrice',
 			key: 'price',
 			sorter: {
 				compare: (a, b) => a.currentPrice - b.currentPrice,
@@ -141,7 +160,7 @@ const CryptoTable = () => {
 		},
 		{
 			title: 'Market Capital',
-			dataIndex: 'marketCapital',
+			dataIndex: 'readableMarketCapital',
 			key: 'marketCapital',
 			sorter: {
 				compare: (a, b) => a.marketCapital - b.marketCapital,
