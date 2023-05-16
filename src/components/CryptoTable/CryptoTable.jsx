@@ -22,6 +22,7 @@ const CryptoTable = () => {
 	const [mktCap, setMktCap] = useState('marketCapital');
 	const [perChange, setPerChange] = useState('%Change');
 	const [isCompareOpen, setIsCompareOpen] = useState(false);
+	const [compareCoinList, setCompareCoinList] = useState([]);
 
 	const chartDataSource = {
 		chart: {
@@ -190,18 +191,21 @@ const CryptoTable = () => {
 			title: 'Add coin to Compare',
 			dataIndex: 'compare',
 			key: 'compare',
-			render: () => {
+			render: (_, currCoin) => {
 				return (
-					<div>
-						<Button>Add to compare</Button>
-					</div>
+					<Button
+						onClick={() => {
+							setCompareCoinList([...compareCoinList, currCoin]);
+						}}
+					>
+						Add to compare
+					</Button>
 				);
 			},
 		},
 	];
 
 	const showModal = (record) => {
-		console.log(record, 'showmodal no record');
 		setIsOpen(true);
 		setModalSelectedCoin(record);
 	};
@@ -211,13 +215,12 @@ const CryptoTable = () => {
 	const handleOk = () => {
 		setIsOpen(false);
 	};
-	const showCompareModal = async (coin1, coin2) => {
+	const showCompareModal = async (coinList) => {
+		const [coin1Obj, coin2Obj] = coinList;
 		setIsCompareOpen(true);
 
-		const coin1Ans = await getCompareCoin1Data(coin1);
-		const coin2Ans = await getCompareCoin2Data(coin2);
-		console.log(coin1Ans, 'coin 1 ans');
-		console.log(coin2Ans, 'coin 2 ans');
+		const coin1Ans = await getCompareCoin1Data(coin1Obj);
+		const coin2Ans = await getCompareCoin2Data(coin2Obj);
 
 		const finalObj = {
 			chart: {
@@ -240,29 +243,30 @@ const CryptoTable = () => {
 			],
 			dataset: [coin1Ans, coin2Ans],
 		};
-		console.log(finalObj, 'final obj');
 		setCompareChartData(finalObj);
-		// console.log(finalObj, 'final obj');
 	};
 
-	const getCompareCoin1Data = async (coin1) => {
+	const getCompareCoin1Data = async (coin1Obj) => {
+		const { key: coinKey, coinName } = coin1Obj;
 		const toTimeStamp = getUnixTime(new Date());
 		const fromTimeStamp = getFromTimeStamp(timeRange.value);
 		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coin1}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
+			`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
 		);
 		const parsedCoinData = getNewConvertedData(data);
 
-		return { seriesname: coin1, data: parsedCoinData };
+		return { seriesname: coinName, data: parsedCoinData };
 	};
-	const getCompareCoin2Data = async (coin2) => {
+	const getCompareCoin2Data = async (coin2Obj) => {
+		const { key: coinKey, coinName } = coin2Obj;
+
 		const toTimeStamp = getUnixTime(new Date());
 		const fromTimeStamp = getFromTimeStamp(timeRange.value);
 		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coin2}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
+			`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
 		);
 		const parsedCoinData = getNewConvertedData(data);
-		return { seriesname: coin2, data: parsedCoinData };
+		return { seriesname: coinName, data: parsedCoinData };
 	};
 	const handleCompareOk = () => {
 		setIsCompareOpen(false);
@@ -299,7 +303,6 @@ const CryptoTable = () => {
 		setChartData(parsedCoinData);
 	};
 	// const onSortChange = (sorter, extra) => {
-	//   console.log("hi am sorting ", sorter, extra);
 	// };
 	const bubbleSort = (dataArr, order, field) => {
 		const newDataArr = [...dataArr];
@@ -348,7 +351,6 @@ const CryptoTable = () => {
 						}}
 						onChange={(value) => {
 							onDataChange(value, 'currentPrice');
-							console.log(value, ' i m value');
 							setCurrPrice(value);
 							setMktCap('marketCapital');
 							setPerChange('%Change');
@@ -429,7 +431,10 @@ const CryptoTable = () => {
 				<Table
 					onRow={(record) => {
 						return {
-							onClick: () => {
+							onClick: (event) => {
+								if (event.target.innerText === 'Add to compare') {
+									return;
+								}
 								showModal(record);
 								getApiChartData(record.key);
 							},
@@ -576,8 +581,7 @@ const CryptoTable = () => {
 			</Modal>
 			<Button
 				onClick={() => {
-					console.log('hii i am compare modal');
-					showCompareModal('bitcoin', 'pax-gold');
+					showCompareModal(compareCoinList);
 				}}
 			>
 				Compare Coins
