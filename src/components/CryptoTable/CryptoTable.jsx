@@ -17,6 +17,7 @@ const CryptoTable = () => {
 	const [apiData, setApiData] = useState([]);
 	const [timeRange, setTimeRange] = useState('1D');
 	const [chartData, setChartData] = useState({});
+	const [compareChartData, setCompareChartData] = useState({});
 	const [currPrice, setCurrPrice] = useState('currPrice');
 	const [mktCap, setMktCap] = useState('marketCapital');
 	const [perChange, setPerChange] = useState('%Change');
@@ -33,121 +34,6 @@ const CryptoTable = () => {
 			theme: 'fusion',
 		},
 		data: chartData,
-	};
-	const compareChartDataSource = {
-		chart: {
-			caption: 'Reach of Social Media Platforms amoung youth',
-			yaxisname: '% of youth on this platform',
-			subcaption: '2012-2016',
-			showhovereffect: '1',
-			numbersuffix: '%',
-			drawcrossline: '1',
-			plottooltext: '<b>$dataValue</b> of youth were on $seriesName',
-			theme: 'fusion',
-		},
-		categories: [
-			{
-				category: [
-					{
-						label: '2012',
-					},
-					{
-						label: '2013',
-					},
-					{
-						label: '2014',
-					},
-					{
-						label: '2015',
-					},
-					{
-						label: '2016',
-					},
-				],
-			},
-		],
-		dataset: [
-			{
-				seriesname: 'Facebook',
-				data: [
-					{
-						value: '0',
-					},
-					{
-						value: '64',
-					},
-					{
-						value: '64',
-					},
-					{
-						value: '66',
-					},
-					{
-						value: '50',
-					},
-				],
-			},
-			{
-				seriesname: 'Instagram',
-				data: [
-					{
-						value: '16',
-					},
-					{
-						value: '28',
-					},
-					{
-						value: '34',
-					},
-					{
-						value: '42',
-					},
-					{
-						value: '54',
-					},
-				],
-			},
-			{
-				seriesname: 'LinkedIn',
-				data: [
-					{
-						value: '20',
-					},
-					{
-						value: '22',
-					},
-					{
-						value: '27',
-					},
-					{
-						value: '22',
-					},
-					{
-						value: '29',
-					},
-				],
-			},
-			{
-				seriesname: 'Twitter',
-				data: [
-					{
-						value: '18',
-					},
-					{
-						value: '19',
-					},
-					{
-						value: '21',
-					},
-					{
-						value: '21',
-					},
-					{
-						value: '24',
-					},
-				],
-			},
-		],
 	};
 
 	const getFromTimeStamp = (timeRange) => {
@@ -183,7 +69,7 @@ const CryptoTable = () => {
 	}, [inputVal]);
 
 	useEffect(() => {
-		if (timeRange) {
+		if (timeRange && isOpen) {
 			getApiChartData(modalSelectedCoin.key);
 		}
 	}, [timeRange]);
@@ -304,8 +190,7 @@ const CryptoTable = () => {
 			title: 'Add coin to Compare',
 			dataIndex: 'compare',
 			key: 'compare',
-			render: (text) => {
-				console.log(text, ' im text');
+			render: () => {
 				return (
 					<div>
 						<Button>Add to compare</Button>
@@ -326,8 +211,58 @@ const CryptoTable = () => {
 	const handleOk = () => {
 		setIsOpen(false);
 	};
-	const showCompareModal = () => {
+	const showCompareModal = async (coin1, coin2) => {
 		setIsCompareOpen(true);
+
+		const coin1Ans = await getCompareCoin1Data(coin1);
+		const coin2Ans = await getCompareCoin2Data(coin2);
+		console.log(coin1Ans, 'coin 1 ans');
+		console.log(coin2Ans, 'coin 2 ans');
+
+		const finalObj = {
+			chart: {
+				caption: 'Reach of Social Media Platforms amoung youth',
+				yaxisname: '% of youth on this platform',
+				subcaption: '2012-2016',
+				showhovereffect: '1',
+				// numbersuffix: '',
+				drawcrossline: '1',
+				plottooltext: '<b>$dataValue</b> of youth were on $seriesName',
+				theme: 'fusion',
+			},
+			categories: [
+				{
+					category: coin1Ans.data,
+				},
+				{
+					category: coin2Ans.data,
+				},
+			],
+			dataset: [coin1Ans, coin2Ans],
+		};
+		console.log(finalObj, 'final obj');
+		setCompareChartData(finalObj);
+		// console.log(finalObj, 'final obj');
+	};
+
+	const getCompareCoin1Data = async (coin1) => {
+		const toTimeStamp = getUnixTime(new Date());
+		const fromTimeStamp = getFromTimeStamp(timeRange.value);
+		const { data } = await axios.get(
+			`https://api.coingecko.com/api/v3/coins/${coin1}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
+		);
+		const parsedCoinData = getNewConvertedData(data);
+
+		return { seriesname: coin1, data: parsedCoinData };
+	};
+	const getCompareCoin2Data = async (coin2) => {
+		const toTimeStamp = getUnixTime(new Date());
+		const fromTimeStamp = getFromTimeStamp(timeRange.value);
+		const { data } = await axios.get(
+			`https://api.coingecko.com/api/v3/coins/${coin2}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
+		);
+		const parsedCoinData = getNewConvertedData(data);
+		return { seriesname: coin2, data: parsedCoinData };
 	};
 	const handleCompareOk = () => {
 		setIsCompareOpen(false);
@@ -340,13 +275,8 @@ const CryptoTable = () => {
 		const dateObj = fromUnixTime(parseInt(timeStamp / 1000));
 		return format(dateObj, 'dd/MM/yyyy HH:mm:ss');
 	};
-	const getApiChartData = async (coin) => {
-		const toTimeStamp = getUnixTime(new Date());
-		const fromTimeStamp = getFromTimeStamp(timeRange.value);
 
-		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coin}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
-		);
+	const getNewConvertedData = (data) => {
 		const newConvertedData = data.prices.map((currItem) => {
 			const [timeStamp, price] = currItem;
 			const dateTime = getDateTimeFromTimeStamp(timeStamp);
@@ -357,7 +287,15 @@ const CryptoTable = () => {
 			};
 		});
 		const parsedCoinData = parseCoinData(newConvertedData);
-
+		return parsedCoinData;
+	};
+	const getApiChartData = async (coin) => {
+		const toTimeStamp = getUnixTime(new Date());
+		const fromTimeStamp = getFromTimeStamp(timeRange.value);
+		const { data } = await axios.get(
+			`https://api.coingecko.com/api/v3/coins/${coin}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
+		);
+		const parsedCoinData = getNewConvertedData(data);
 		setChartData(parsedCoinData);
 	};
 	// const onSortChange = (sorter, extra) => {
@@ -633,19 +571,13 @@ const CryptoTable = () => {
 					/>
 				</div>
 				<div>
-					<ReactFusioncharts
-						type='msline'
-						width='100%'
-						height='100%'
-						dataFormat='JSON'
-						dataSource={compareChartDataSource}
-					/>
+					<ReactFusioncharts type='msline' width='100%' height='100%' dataFormat='JSON' dataSource={compareChartData} />
 				</div>
 			</Modal>
 			<Button
 				onClick={() => {
 					console.log('hii i am compare modal');
-					showCompareModal();
+					showCompareModal('bitcoin', 'pax-gold');
 				}}
 			>
 				Compare Coins
