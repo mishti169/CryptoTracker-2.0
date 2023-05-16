@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Modal, Select } from 'antd';
+import { Table, Modal, Select, Button } from 'antd';
 import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
 import FusionCharts from 'fusioncharts';
@@ -20,6 +20,7 @@ const CryptoTable = () => {
 	const [currPrice, setCurrPrice] = useState('currPrice');
 	const [mktCap, setMktCap] = useState('marketCapital');
 	const [perChange, setPerChange] = useState('%Change');
+	const [isCompareOpen, setIsCompareOpen] = useState(false);
 
 	const chartDataSource = {
 		chart: {
@@ -33,6 +34,122 @@ const CryptoTable = () => {
 		},
 		data: chartData,
 	};
+	const compareChartDataSource = {
+		chart: {
+			caption: 'Reach of Social Media Platforms amoung youth',
+			yaxisname: '% of youth on this platform',
+			subcaption: '2012-2016',
+			showhovereffect: '1',
+			numbersuffix: '%',
+			drawcrossline: '1',
+			plottooltext: '<b>$dataValue</b> of youth were on $seriesName',
+			theme: 'fusion',
+		},
+		categories: [
+			{
+				category: [
+					{
+						label: '2012',
+					},
+					{
+						label: '2013',
+					},
+					{
+						label: '2014',
+					},
+					{
+						label: '2015',
+					},
+					{
+						label: '2016',
+					},
+				],
+			},
+		],
+		dataset: [
+			{
+				seriesname: 'Facebook',
+				data: [
+					{
+						value: '0',
+					},
+					{
+						value: '64',
+					},
+					{
+						value: '64',
+					},
+					{
+						value: '66',
+					},
+					{
+						value: '50',
+					},
+				],
+			},
+			{
+				seriesname: 'Instagram',
+				data: [
+					{
+						value: '16',
+					},
+					{
+						value: '28',
+					},
+					{
+						value: '34',
+					},
+					{
+						value: '42',
+					},
+					{
+						value: '54',
+					},
+				],
+			},
+			{
+				seriesname: 'LinkedIn',
+				data: [
+					{
+						value: '20',
+					},
+					{
+						value: '22',
+					},
+					{
+						value: '27',
+					},
+					{
+						value: '22',
+					},
+					{
+						value: '29',
+					},
+				],
+			},
+			{
+				seriesname: 'Twitter',
+				data: [
+					{
+						value: '18',
+					},
+					{
+						value: '19',
+					},
+					{
+						value: '21',
+					},
+					{
+						value: '21',
+					},
+					{
+						value: '24',
+					},
+				],
+			},
+		],
+	};
+
 	const getFromTimeStamp = (timeRange) => {
 		if (timeRange === '7D') {
 			const ans = sub(new Date(), { weeks: 1 });
@@ -183,6 +300,19 @@ const CryptoTable = () => {
 				compare: (a, b) => a.change - b.change,
 			},
 		},
+		{
+			title: 'Add coin to Compare',
+			dataIndex: 'compare',
+			key: 'compare',
+			render: (text) => {
+				console.log(text, ' im text');
+				return (
+					<div>
+						<Button>Add to compare</Button>
+					</div>
+				);
+			},
+		},
 	];
 
 	const showModal = (record) => {
@@ -195,6 +325,15 @@ const CryptoTable = () => {
 	};
 	const handleOk = () => {
 		setIsOpen(false);
+	};
+	const showCompareModal = () => {
+		setIsCompareOpen(true);
+	};
+	const handleCompareOk = () => {
+		setIsCompareOpen(false);
+	};
+	const handleCompareCancel = () => {
+		setIsCompareOpen(false);
 	};
 
 	const getDateTimeFromTimeStamp = (timeStamp) => {
@@ -436,6 +575,81 @@ const CryptoTable = () => {
 					<ReactFusioncharts type='line' width='100%' height='100%' dataFormat='JSON' dataSource={chartDataSource} />
 				</div>
 			</Modal>
+			<Modal
+				title='Compare Coin Modal'
+				open={isCompareOpen}
+				onOk={handleCompareOk}
+				onCancel={handleCompareCancel}
+				centered
+				width='90%'
+			>
+				{/* <img src={modalSelectedCoin.img} width={110} /> */}
+				<div>
+					<Select
+						labelInValue
+						value={timeRange}
+						defaultValue={[
+							{
+								value: '1D',
+								label: '1D ',
+							},
+						]}
+						style={{
+							width: 120,
+						}}
+						onChange={(value) => {
+							setTimeRange(value);
+						}}
+						options={[
+							{
+								value: '1D',
+								label: '1D',
+							},
+							{
+								value: '7D',
+								label: '7D',
+							},
+							{
+								value: '1M',
+								label: '1M',
+							},
+							{
+								value: '3M',
+								label: '3M',
+							},
+							{
+								value: '6M',
+								label: '6M',
+							},
+							{
+								value: '1Y',
+								label: '1Y',
+							},
+							{
+								value: '3Y',
+								label: '3Y',
+							},
+						]}
+					/>
+				</div>
+				<div>
+					<ReactFusioncharts
+						type='msline'
+						width='100%'
+						height='100%'
+						dataFormat='JSON'
+						dataSource={compareChartDataSource}
+					/>
+				</div>
+			</Modal>
+			<Button
+				onClick={() => {
+					console.log('hii i am compare modal');
+					showCompareModal();
+				}}
+			>
+				Compare Coins
+			</Button>
 		</div>
 	);
 };
