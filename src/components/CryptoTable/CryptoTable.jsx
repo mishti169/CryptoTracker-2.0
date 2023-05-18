@@ -227,11 +227,19 @@ const CryptoTable = () => {
 		setIsOpen(false);
 	};
 	const showCompareModal = async (coinList) => {
-		const [coin1Obj, coin2Obj] = coinList;
+		// const [coin1Obj, coin2Obj] = coinList;
 		setIsCompareOpen(true);
+		let coinAns = [];
+		for (let i = 0; i < coinList.length; i++) {
+			const ans = await getCompareCoin1Data(coinList[i]);
+			coinAns.push(ans);
+		}
 
-		const coin1Ans = await getCompareCoin1Data(coin1Obj);
-		const coin2Ans = await getCompareCoin2Data(coin2Obj);
+		const categories = coinAns.map((currItem) => {
+			return {
+				category: currItem.data,
+			};
+		});
 
 		const finalObj = {
 			chart: {
@@ -241,15 +249,8 @@ const CryptoTable = () => {
 				drawcrossline: '1',
 				theme: 'fusion',
 			},
-			categories: [
-				{
-					category: coin1Ans.data,
-				},
-				{
-					category: coin2Ans.data,
-				},
-			],
-			dataset: [coin1Ans, coin2Ans],
+			categories: categories,
+			dataset: coinAns,
 		};
 		setCompareChartData(finalObj);
 	};
@@ -263,17 +264,6 @@ const CryptoTable = () => {
 		);
 		const parsedCoinData = getNewConvertedData(data);
 
-		return { seriesname: coinName, data: parsedCoinData };
-	};
-	const getCompareCoin2Data = async (coin2Obj) => {
-		const { key: coinKey, coinName } = coin2Obj;
-
-		const toTimeStamp = getUnixTime(new Date());
-		const fromTimeStamp = getFromTimeStamp(timeRange.value);
-		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
-		);
-		const parsedCoinData = getNewConvertedData(data);
 		return { seriesname: coinName, data: parsedCoinData };
 	};
 	const handleCompareOk = () => {
@@ -452,7 +442,6 @@ const CryptoTable = () => {
 					columns={columns}
 					pagination={{ pageSize: 7 }}
 					pageSize={7}
-
 					// onChange={onSortChange}
 				/>
 			</div>
