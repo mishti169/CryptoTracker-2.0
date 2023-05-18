@@ -224,13 +224,11 @@ const CryptoTable = () => {
 
 		const finalObj = {
 			chart: {
-				caption: 'Reach of Social Media Platforms amoung youth',
-				yaxisname: '% of youth on this platform',
-				subcaption: '2012-2016',
+				caption: 'Coin comparision of pricing over time',
+				yaxisname: 'Price',
 				showhovereffect: '1',
-				// numbersuffix: '',
 				drawcrossline: '1',
-				plottooltext: '<b>$dataValue</b> of youth were on $seriesName',
+
 				theme: 'fusion',
 			},
 			categories: [
