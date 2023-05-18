@@ -193,13 +193,24 @@ const CryptoTable = () => {
 			key: 'compare',
 			render: (_, currCoin) => {
 				return (
-					<Button
-						onClick={() => {
-							setCompareCoinList([...compareCoinList, currCoin]);
-						}}
-					>
-						Add to compare
-					</Button>
+					<div>
+						<Button
+							onClick={() => {
+								setCompareCoinList([...compareCoinList, currCoin]);
+							}}
+						>
+							Add to compare
+						</Button>
+						<Button
+							onClick={() => {
+								console.log('hii i am remove btn');
+							}}
+							title='Remove from compare'
+							style={{ marginLeft: '10px' }}
+						>
+							-
+						</Button>
+					</div>
 				);
 			},
 		},
@@ -228,7 +239,6 @@ const CryptoTable = () => {
 				yaxisname: 'Price',
 				showhovereffect: '1',
 				drawcrossline: '1',
-
 				theme: 'fusion',
 			},
 			categories: [
@@ -430,7 +440,7 @@ const CryptoTable = () => {
 					onRow={(record) => {
 						return {
 							onClick: (event) => {
-								if (event.target.innerText === 'Add to compare') {
+								if (event.target.innerText === 'Add to compare' || event.target.innerText === '-') {
 									return;
 								}
 								showModal(record);
@@ -440,7 +450,9 @@ const CryptoTable = () => {
 					}}
 					dataSource={dataSource}
 					columns={columns}
-					pagination={false}
+					pagination={{ pageSize: 7 }}
+					pageSize={7}
+
 					// onChange={onSortChange}
 				/>
 			</div>
@@ -524,7 +536,6 @@ const CryptoTable = () => {
 				centered
 				width='90%'
 			>
-				{/* <img src={modalSelectedCoin.img} width={110} /> */}
 				<div>
 					<Select
 						labelInValue
