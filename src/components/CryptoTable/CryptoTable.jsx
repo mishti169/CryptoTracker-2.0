@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Modal, Select, Button } from 'antd';
+import { Table, Modal, Select, Button, Input } from 'antd';
 import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
 import FusionCharts from 'fusioncharts';
@@ -8,6 +8,8 @@ import ReactFusioncharts from 'react-fusioncharts';
 import { fromUnixTime, getTime, getUnixTime, sub, format } from 'date-fns';
 import './CryptoTable.scss';
 ReactFusioncharts.fcRoot(FusionCharts, Charts, FusionTheme);
+
+const { Search } = Input;
 
 const CryptoTable = () => {
 	const [inputVal, setInputVal] = useState('');
@@ -364,7 +366,8 @@ const CryptoTable = () => {
 	return (
 		<div>
 			<div className='centered  flex-box  space-between max-width-1200'>
-				<input type='search' placeholder='Search Coin' value={inputVal} onChange={handleChange} className='input ' />
+				<Search placeholder='Search Coin' value={inputVal} enterButton className='input ' />
+
 				<div>
 					<Select
 						defaultValue='currPrice'
