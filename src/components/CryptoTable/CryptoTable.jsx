@@ -207,8 +207,9 @@ const CryptoTable = () => {
 								onClick={() => {
 									setCompareCoinList([...compareCoinList, currCoin]);
 								}}
+								title='Add to compare'
 							>
-								Add to compare
+								+
 							</Button>
 						)}
 						{!shouldShowAddToCompare(currCoin) && (
@@ -222,7 +223,6 @@ const CryptoTable = () => {
 									setCompareCoinList(afterRemoveInArr);
 								}}
 								title='Remove from compare'
-								style={{ marginLeft: '10px' }}
 							>
 								-
 							</Button>
@@ -456,7 +456,7 @@ const CryptoTable = () => {
 					onRow={(record) => {
 						return {
 							onClick: (event) => {
-								if (event.target.innerText === 'Add to compare' || event.target.innerText === '-') {
+								if (event.target.innerText === '+' || event.target.innerText === '-') {
 									return;
 								}
 								showModal(record);
