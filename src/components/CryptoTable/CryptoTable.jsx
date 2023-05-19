@@ -186,6 +186,17 @@ const CryptoTable = () => {
 			sorter: {
 				compare: (a, b) => a.change - b.change,
 			},
+			render: (percentage) => {
+				console.log(percentage, ' i am %');
+				const className = percentage > 0 ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down';
+				const color = percentage > 0 ? 'green' : 'red';
+				return (
+					<div>
+						<i class={className} style={{ color: color, marginRight: '4px' }}></i>
+						<span>{Math.abs(percentage)}</span>
+					</div>
+				);
+			},
 		},
 		{
 			title: 'Add coin to Compare',
