@@ -247,7 +247,7 @@ const CryptoTable = () => {
 		setIsCompareOpen(true);
 		let coinAns = [];
 		for (let i = 0; i < coinList.length; i++) {
-			const ans = await getCompareCoin1Data(coinList[i]);
+			const ans = await getCompareCoinData(coinList[i]);
 			coinAns.push(ans);
 		}
 
@@ -271,8 +271,8 @@ const CryptoTable = () => {
 		setCompareChartData(finalObj);
 	};
 
-	const getCompareCoin1Data = async (coin1Obj) => {
-		const { key: coinKey, coinName } = coin1Obj;
+	const getCompareCoinData = async (coinObj) => {
+		const { key: coinKey, coinName } = coinObj;
 		const toTimeStamp = getUnixTime(new Date());
 		const fromTimeStamp = getFromTimeStamp(timeRange.value);
 		const { data } = await axios.get(
