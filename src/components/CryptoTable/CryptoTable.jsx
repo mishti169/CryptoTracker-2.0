@@ -185,7 +185,6 @@ const CryptoTable = () => {
 				compare: (a, b) => a.change - b.change,
 			},
 			render: (percentage) => {
-				console.log(percentage, ' i am %');
 				const className = percentage > 0 ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down';
 				const color = percentage > 0 ? 'green' : 'red';
 				return (
@@ -215,7 +214,6 @@ const CryptoTable = () => {
 						{!shouldShowAddToCompare(currCoin) && (
 							<Button
 								onClick={() => {
-									console.log('hii i am remove btn');
 									const afterRemoveInArr = compareCoinList.filter((cc) => {
 										if (cc.key !== currCoin.key) {
 											return cc;
