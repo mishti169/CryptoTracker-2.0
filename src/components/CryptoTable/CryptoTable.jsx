@@ -466,7 +466,7 @@ const CryptoTable = () => {
 					}}
 					dataSource={dataSource}
 					columns={columns}
-					pagination={{ pageSize: 7 }}
+					pagination={{ pageSize: 7, position: ['bottomRight'] }}
 					pageSize={7}
 				/>
 			</div>
@@ -603,6 +603,8 @@ const CryptoTable = () => {
 				</div>
 			</Modal>
 			<Button
+				className='compare-coins-btn'
+				type='primary'
 				onClick={() => {
 					showCompareModal(compareCoinList);
 				}}
