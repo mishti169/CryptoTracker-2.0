@@ -30,7 +30,6 @@ const CryptoTable = () => {
 			yaxisname: 'price',
 			xaxisname: 'time',
 			subcaption: '',
-			// rotatelabels: '1',
 			setadaptiveymin: '1',
 			theme: 'fusion',
 		},
@@ -143,7 +142,6 @@ const CryptoTable = () => {
 			dataIndex: 'coinName',
 			key: 'name',
 			sorter: (a, b) => {
-				// const ans = a.coinName.toLowerCase() - b.coinName.toLowerCase();
 				if (a.coinName.toLowerCase() > b.coinName.toLowerCase()) {
 					return 1;
 				} else if (a.coinName.toLowerCase() < b.coinName.toLowerCase()) {
@@ -248,7 +246,6 @@ const CryptoTable = () => {
 		setIsOpen(false);
 	};
 	const showCompareModal = async (coinList) => {
-		// const [coin1Obj, coin2Obj] = coinList;
 		setIsCompareOpen(true);
 		let coinAns = [];
 		for (let i = 0; i < coinList.length; i++) {
@@ -333,8 +330,6 @@ const CryptoTable = () => {
 		const parsedCoinData = getNewConvertedData(data);
 		setChartData(parsedCoinData);
 	};
-	// const onSortChange = (sorter, extra) => {
-	// };
 	const bubbleSort = (dataArr, order, field) => {
 		const newDataArr = [...dataArr];
 		if (order !== '') {
@@ -475,7 +470,6 @@ const CryptoTable = () => {
 					columns={columns}
 					pagination={{ pageSize: 7 }}
 					pageSize={7}
-					// onChange={onSortChange}
 				/>
 			</div>
 			<Modal
