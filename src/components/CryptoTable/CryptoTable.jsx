@@ -196,7 +196,7 @@ const CryptoTable = () => {
 			},
 		},
 		{
-			title: 'Add coin to Compare',
+			title: 'Add to Compare',
 			dataIndex: 'compare',
 			key: 'compare',
 			render: (_, currCoin) => {
