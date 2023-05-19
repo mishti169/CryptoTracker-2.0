@@ -194,22 +194,32 @@ const CryptoTable = () => {
 			render: (_, currCoin) => {
 				return (
 					<div>
-						<Button
-							onClick={() => {
-								setCompareCoinList([...compareCoinList, currCoin]);
-							}}
-						>
-							Add to compare
-						</Button>
-						<Button
-							onClick={() => {
-								console.log('hii i am remove btn');
-							}}
-							title='Remove from compare'
-							style={{ marginLeft: '10px' }}
-						>
-							-
-						</Button>
+						{shouldShowAddToCompare(currCoin) && (
+							<Button
+								onClick={() => {
+									setCompareCoinList([...compareCoinList, currCoin]);
+								}}
+							>
+								Add to compare
+							</Button>
+						)}
+						{!shouldShowAddToCompare(currCoin) && (
+							<Button
+								onClick={() => {
+									console.log('hii i am remove btn');
+									const afterRemoveInArr = compareCoinList.filter((cc) => {
+										if (cc.key !== currCoin.key) {
+											return cc;
+										}
+									});
+									setCompareCoinList(afterRemoveInArr);
+								}}
+								title='Remove from compare'
+								style={{ marginLeft: '10px' }}
+							>
+								-
+							</Button>
+						)}
 					</div>
 				);
 			},
@@ -266,6 +276,18 @@ const CryptoTable = () => {
 
 		return { seriesname: coinName, data: parsedCoinData };
 	};
+
+	const shouldShowAddToCompare = (currCoin) => {
+		let ans = true;
+		compareCoinList.forEach((cc) => {
+			if (cc.key === currCoin.key) {
+				ans = false;
+				return ans;
+			}
+		});
+		return ans;
+	};
+
 	const handleCompareOk = () => {
 		setIsCompareOpen(false);
 	};
