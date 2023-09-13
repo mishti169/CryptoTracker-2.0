@@ -7,6 +7,7 @@ import FusionCharts from 'fusioncharts';
 import ReactFusioncharts from 'react-fusioncharts';
 import { fromUnixTime, getTime, getUnixTime, sub, format } from 'date-fns';
 import './CryptoTable.scss';
+
 ReactFusioncharts.fcRoot(FusionCharts, Charts, FusionTheme);
 
 const { Search } = Input;
@@ -18,7 +19,7 @@ const CryptoTable = () => {
 	const [modalSelectedCoin, setModalSelectedCoin] = useState({});
 	const [apiData, setApiData] = useState([]);
 	const [timeRange, setTimeRange] = useState('1D');
-	const [chartData, setChartData] = useState({});
+	const [chartData, setChartData] = useState(null);
 	const [compareChartData, setCompareChartData] = useState({});
 	const [currPrice, setCurrPrice] = useState('currPrice');
 	const [mktCap, setMktCap] = useState('marketCapital');
@@ -40,25 +41,39 @@ const CryptoTable = () => {
 
 	const getFromTimeStamp = (timeRange) => {
 		if (timeRange === '7D') {
-			const ans = sub(new Date(), { weeks: 1 });
+			const ans = sub(new Date(), {
+				weeks: 1,
+			});
 			return getUnixTime(ans);
 		} else if (timeRange === '1M') {
-			const ans = sub(new Date(), { months: 1 });
+			const ans = sub(new Date(), {
+				months: 1,
+			});
 			return getUnixTime(ans);
 		} else if (timeRange === '3M') {
-			const ans = sub(new Date(), { months: 3 });
+			const ans = sub(new Date(), {
+				months: 3,
+			});
 			return getUnixTime(ans);
 		} else if (timeRange === '6M') {
-			const ans = sub(new Date(), { months: 6 });
+			const ans = sub(new Date(), {
+				months: 6,
+			});
 			return getUnixTime(ans);
 		} else if (timeRange === '1Y') {
-			const ans = sub(new Date(), { years: 1 });
+			const ans = sub(new Date(), {
+				years: 1,
+			});
 			return getUnixTime(ans);
 		} else if (timeRange === '3y') {
-			const ans = sub(new Date(), { years: 3 });
+			const ans = sub(new Date(), {
+				years: 3,
+			});
 			return getUnixTime(ans);
 		} else {
-			const ans = sub(new Date(), { days: 1 });
+			const ans = sub(new Date(), {
+				days: 1,
+			});
 			return getUnixTime(ans);
 		}
 	};
@@ -67,6 +82,7 @@ const CryptoTable = () => {
 	}, []);
 
 	useEffect(() => {
+		if (!inputVal) return;
 		filterCoinData();
 	}, [inputVal]);
 
@@ -112,9 +128,7 @@ const CryptoTable = () => {
 		} else return val;
 	};
 	const getApiCryptoData = async () => {
-		const { data } = await axios.get(
-			'https://api.coingecko.com/api/v3/coins/markets?vs_currency=INR&order=market_cap_desc&per_page=100&page=1&sparkline=false'
-		);
+		const { data } = await axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=INR&order=market_cap_desc&per_page=100&page=1&sparkline=false');
 
 		const allCoinDataArr = data.map((currCoinData) => {
 			return {
@@ -191,7 +205,13 @@ const CryptoTable = () => {
 				const color = percentage > 0 ? 'green' : 'red';
 				return (
 					<div>
-						<i class={className} style={{ color: color, marginRight: '4px' }}></i>
+						<i
+							className={className}
+							style={{
+								color: color,
+								marginRight: '4px',
+							}}
+						></i>
 						<span>{Math.abs(percentage)}</span>
 					</div>
 				);
@@ -241,6 +261,7 @@ const CryptoTable = () => {
 	};
 	const handleCancel = () => {
 		setIsOpen(false);
+		setChartData(null);
 	};
 	const handleOk = () => {
 		setIsOpen(false);
@@ -277,12 +298,13 @@ const CryptoTable = () => {
 		const { key: coinKey, coinName } = coinObj;
 		const toTimeStamp = getUnixTime(new Date());
 		const fromTimeStamp = getFromTimeStamp(timeRange.value);
-		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
-		);
+		const { data } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`);
 		const parsedCoinData = getNewConvertedData(data);
 
-		return { seriesname: coinName, data: parsedCoinData };
+		return {
+			seriesname: coinName,
+			data: parsedCoinData,
+		};
 	};
 
 	const shouldShowAddToCompare = (currCoin) => {
@@ -324,9 +346,7 @@ const CryptoTable = () => {
 	const getApiChartData = async (coin) => {
 		const toTimeStamp = getUnixTime(new Date());
 		const fromTimeStamp = getFromTimeStamp(timeRange.value);
-		const { data } = await axios.get(
-			`https://api.coingecko.com/api/v3/coins/${coin}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`
-		);
+		const { data } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coin}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`);
 		const parsedCoinData = getNewConvertedData(data);
 		setChartData(parsedCoinData);
 	};
@@ -469,7 +489,10 @@ const CryptoTable = () => {
 					}}
 					dataSource={dataSource}
 					columns={columns}
-					pagination={{ pageSize: 7, position: ['bottomRight'] }}
+					pagination={{
+						pageSize: 7,
+						position: ['bottomRight'],
+					}}
 					pageSize={7}
 				/>
 			</div>
@@ -489,13 +512,19 @@ const CryptoTable = () => {
 					<img src={modalSelectedCoin.img} width={110} />
 					<div>
 						<h2>{modalSelectedCoin.coinName}</h2>
-						<h3>Current Price:{modalSelectedCoin.currentPrice}</h3>
-						<h3>Market Capital:{modalSelectedCoin.marketCapital}</h3>
+						<h3>
+							Current Price:
+							{modalSelectedCoin.currentPrice}
+						</h3>
+						<h3>
+							Market Capital:
+							{modalSelectedCoin.marketCapital}
+						</h3>
 					</div>
 				</div>
 				<div>
 					<Select
-						labelInValue
+						// labelInValue
 						value={timeRange}
 						defaultValue={[
 							{
@@ -541,21 +570,12 @@ const CryptoTable = () => {
 						]}
 					/>
 				</div>
-				<div>
-					<ReactFusioncharts type='line' width='100%' height='100%' dataFormat='JSON' dataSource={chartDataSource} />
-				</div>
+				<div id='fusion-chart-render'>{isOpen && chartData && <ReactFusioncharts key='chart-data' type='line' width='100%' height='100%' dataFormat='JSON' dataSource={chartDataSource} />}</div>
 			</Modal>
-			<Modal
-				title='Compare Coin Modal'
-				open={isCompareOpen}
-				onOk={handleCompareOk}
-				onCancel={handleCompareCancel}
-				centered
-				width='90%'
-			>
+			<Modal title='Compare Coin Modal' open={isCompareOpen} onOk={handleCompareOk} onCancel={handleCompareCancel} centered width='90%'>
 				<div>
 					<Select
-						labelInValue
+						// labelInValue
 						value={timeRange}
 						defaultValue={[
 							{
@@ -601,9 +621,7 @@ const CryptoTable = () => {
 						]}
 					/>
 				</div>
-				<div>
-					<ReactFusioncharts type='msline' width='100%' height='100%' dataFormat='JSON' dataSource={compareChartData} />
-				</div>
+				<div>{isCompareOpen && compareChartData && <ReactFusioncharts key='compare-chart-data' type='msline' width='100%' height='100%' dataFormat='JSON' dataSource={compareChartData} />}</div>
 			</Modal>
 			<Button
 				className='compare-coins-btn'
