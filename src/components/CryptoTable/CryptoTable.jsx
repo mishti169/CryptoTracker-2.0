@@ -90,6 +90,9 @@ const CryptoTable = () => {
 		if (timeRange && isOpen) {
 			getApiChartData(modalSelectedCoin.key);
 		}
+		if (timeRange && isCompareOpen) {
+			getCoinsTimeRangeData(compareCoinList);
+		}
 	}, [timeRange]);
 
 	const handleChange = (e) => {
@@ -266,16 +269,27 @@ const CryptoTable = () => {
 	const handleOk = () => {
 		setIsOpen(false);
 	};
-	const showCompareModal = async (coinList) => {
-		setIsCompareOpen(true);
+
+	const getCompareCoinData = async (coinObj) => {
+		const { key: coinKey, coinName } = coinObj;
+		const toTimeStamp = getUnixTime(new Date());
+		const fromTimeStamp = getFromTimeStamp(timeRange);
+		const { data } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`);
+		const parsedCoinData = getNewConvertedData(data);
+
+		return {
+			seriesname: coinName,
+			data: parsedCoinData,
+		};
+	};
+	const getCoinsTimeRangeData = (selectedCoins) => {
 		let coinAns = [];
-		const promises = coinList.map((coin) => {
+		const promises = selectedCoins.map((coin) => {
 			return getCompareCoinData(coin);
 		});
 		Promise.all(promises)
 			.then((results) => {
 				coinAns.push(...results);
-				// Continue with the rest of your code here
 				const categories = coinAns.map((currItem) => {
 					return {
 						category: currItem.data,
@@ -295,26 +309,12 @@ const CryptoTable = () => {
 				setCompareChartData(finalObj);
 			})
 			.catch((error) => {
-				// Handle any errors that occurred during the promise execution
 				console.error(error);
 			});
-		// for (let i = 0; i < coinList.length; i++) {
-		// 	const ans = await getCompareCoinData(coinList[i]);
-		// 	coinAns.push(ans);
-		// }
 	};
-
-	const getCompareCoinData = async (coinObj) => {
-		const { key: coinKey, coinName } = coinObj;
-		const toTimeStamp = getUnixTime(new Date());
-		const fromTimeStamp = getFromTimeStamp(timeRange.value);
-		const { data } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinKey}/market_chart/range?vs_currency=usd&from=${fromTimeStamp}&to=${toTimeStamp}`);
-		const parsedCoinData = getNewConvertedData(data);
-
-		return {
-			seriesname: coinName,
-			data: parsedCoinData,
-		};
+	const showCompareModal = (coinList) => {
+		setIsCompareOpen(true);
+		getCoinsTimeRangeData(coinList);
 	};
 
 	const shouldShowAddToCompare = (currCoin) => {
