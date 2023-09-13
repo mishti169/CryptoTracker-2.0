@@ -20,7 +20,7 @@ const CryptoTable = () => {
 	const [apiData, setApiData] = useState([]);
 	const [timeRange, setTimeRange] = useState('1D');
 	const [chartData, setChartData] = useState(null);
-	const [compareChartData, setCompareChartData] = useState({});
+	const [compareChartData, setCompareChartData] = useState(null);
 	const [currPrice, setCurrPrice] = useState('currPrice');
 	const [mktCap, setMktCap] = useState('marketCapital');
 	const [perChange, setPerChange] = useState('%Change');
@@ -269,29 +269,39 @@ const CryptoTable = () => {
 	const showCompareModal = async (coinList) => {
 		setIsCompareOpen(true);
 		let coinAns = [];
-		for (let i = 0; i < coinList.length; i++) {
-			const ans = await getCompareCoinData(coinList[i]);
-			coinAns.push(ans);
-		}
-
-		const categories = coinAns.map((currItem) => {
-			return {
-				category: currItem.data,
-			};
+		const promises = coinList.map((coin) => {
+			return getCompareCoinData(coin);
 		});
-
-		const finalObj = {
-			chart: {
-				caption: 'Coin comparision of pricing over time',
-				yaxisname: 'Price',
-				showhovereffect: '1',
-				drawcrossline: '1',
-				theme: 'fusion',
-			},
-			categories: categories,
-			dataset: coinAns,
-		};
-		setCompareChartData(finalObj);
+		Promise.all(promises)
+			.then((results) => {
+				coinAns.push(...results);
+				// Continue with the rest of your code here
+				const categories = coinAns.map((currItem) => {
+					return {
+						category: currItem.data,
+					};
+				});
+				const finalObj = {
+					chart: {
+						caption: 'Coin comparision of pricing over time',
+						yaxisname: 'Price',
+						showhovereffect: '1',
+						drawcrossline: '1',
+						theme: 'fusion',
+					},
+					categories: categories,
+					dataset: coinAns,
+				};
+				setCompareChartData(finalObj);
+			})
+			.catch((error) => {
+				// Handle any errors that occurred during the promise execution
+				console.error(error);
+			});
+		// for (let i = 0; i < coinList.length; i++) {
+		// 	const ans = await getCompareCoinData(coinList[i]);
+		// 	coinAns.push(ans);
+		// }
 	};
 
 	const getCompareCoinData = async (coinObj) => {
@@ -330,6 +340,10 @@ const CryptoTable = () => {
 		return format(dateObj, 'dd/MM/yyyy HH:mm:ss');
 	};
 
+	const getTooltipText = (dateTime, price) => {
+		return `Price: ${price.toFixed(2)}, Date: ${dateTime}`;
+	};
+
 	const getNewConvertedData = (data) => {
 		const newConvertedData = data.prices.map((currItem) => {
 			const [timeStamp, price] = currItem;
@@ -337,7 +351,7 @@ const CryptoTable = () => {
 			return {
 				label: dateTime,
 				value: price,
-				tooltext: dateTime,
+				tooltext: getTooltipText(dateTime, price),
 			};
 		});
 		const parsedCoinData = parseCoinData(newConvertedData);
@@ -570,7 +584,7 @@ const CryptoTable = () => {
 						]}
 					/>
 				</div>
-				<div id='fusion-chart-render'>{isOpen && chartData && <ReactFusioncharts key='chart-data' type='line' width='100%' height='100%' dataFormat='JSON' dataSource={chartDataSource} />}</div>
+				<div id='fusion-chart-render'>{isOpen && chartData && <ReactFusioncharts key='chart-data' type='line' width='100%' height='500' dataFormat='JSON' dataSource={chartDataSource} />}</div>
 			</Modal>
 			<Modal title='Compare Coin Modal' open={isCompareOpen} onOk={handleCompareOk} onCancel={handleCompareCancel} centered width='90%'>
 				<div>
@@ -621,7 +635,7 @@ const CryptoTable = () => {
 						]}
 					/>
 				</div>
-				<div>{isCompareOpen && compareChartData && <ReactFusioncharts key='compare-chart-data' type='msline' width='100%' height='100%' dataFormat='JSON' dataSource={compareChartData} />}</div>
+				<div>{isCompareOpen && compareChartData && <ReactFusioncharts key='compare-chart-data' type='msline' width='100%' height='500' dataFormat='JSON' dataSource={compareChartData} />}</div>
 			</Modal>
 			<Button
 				className='compare-coins-btn'
