@@ -333,6 +333,7 @@ const CryptoTable = () => {
 	};
 	const handleCompareCancel = () => {
 		setIsCompareOpen(false);
+		setCompareChartData(null);
 	};
 
 	const getDateTimeFromTimeStamp = (timeStamp) => {
